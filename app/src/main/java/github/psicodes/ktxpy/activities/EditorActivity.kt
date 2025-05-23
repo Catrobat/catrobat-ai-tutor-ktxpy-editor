@@ -47,6 +47,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.catrobat.aitutor.AndroidPlatform
+import org.catrobat.aitutor.Greeting
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
@@ -72,6 +74,7 @@ class EditorActivity : AppCompatActivity() {
         setCurrentFile()
         dataStore = SettingsDataStore(applicationContext)
         binding.materialToolbar.setTitleTextAppearance(this,R.style.RobotoBoldTextAppearance)
+        binding.aiAssist.setImageIcon(Icon.createWithResource(this,R.drawable.ai_assist_icon))
         binding.runCode.setImageIcon(Icon.createWithResource(this,R.drawable.code_run_icon))
         setSupportActionBar(binding.materialToolbar)
         binding.symbolInput.addSymbols(
@@ -156,6 +159,10 @@ class EditorActivity : AppCompatActivity() {
         updateBtnState()
         CoroutineScope(Dispatchers.Default).launch {
             setTheme(dataStore.mThemeString.first() ?: EditorTheme.QuietLight)
+        }
+        binding.aiAssist.setOnClickListener {
+            val greeting = Greeting().greet()
+            Toast.makeText(this, greeting, Toast.LENGTH_SHORT).show()
         }
         binding.runCode.setOnClickListener {
             saveFile()

@@ -19,6 +19,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:id="@+id/ai_assist"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/run_code"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/ai_assist" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:id="@+id/run_code"
         android:layout_margin="16dp"
         app:layout_constraintBottom_toTopOf="@+id/symbol_input_scroll"
