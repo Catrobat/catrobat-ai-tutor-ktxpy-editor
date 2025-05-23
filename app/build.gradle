@@ -158,6 +158,9 @@ dependencies {
     implementation 'io.github.raamcosta.compose-destinations:animations-core:1.9.54'
     ksp 'io.github.raamcosta.compose-destinations:ksp:1.9.54'
 
+    // AI Tutor
+    implementation 'org.catrobat:aitutor:0.0.1'
+
     // Test
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
