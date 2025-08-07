@@ -25,6 +25,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.blankj.utilcode.util.UriUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import github.psicodes.ktxpy.R
@@ -47,8 +56,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.catrobat.aitutor.AndroidPlatform
-import org.catrobat.aitutor.Greeting
+import org.catrobat.aitutor.ui.public.AiTutorFloatingActionButton
+import org.catrobat.aitutor.ui.public.AiTutorView
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
@@ -65,17 +74,50 @@ class EditorActivity : AppCompatActivity() {
     private lateinit var dataStore: SettingsDataStore
     private var currentFiles: List<File> = emptyList()
 
+    private var showAiTutor by mutableStateOf(false)
+    private var codeContextForTutor by mutableStateOf("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         github.psicodes.ktxpy.utils.CrashHandler.INSTANCE.init(this)
         binding = ActivityEditorBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // AI TUTOR START (Step 2: Set content for the ComposeView)
+        binding.composeView.setContent {
+            // It's good practice to wrap library components in your app's theme
+//            MaterialTheme {
+            Box(modifier = Modifier.fillMaxSize()) {
+                // The library's FAB. We align it to the bottom-end
+                // and add padding to position it above your existing XML FAB.
+                AiTutorFloatingActionButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 140.dp), // Position above the other FAB
+                    onClick = {
+                        // When clicked, capture the latest code and show the view
+                        codeContextForTutor = binding.editor.text.toString()
+                        showAiTutor = true
+                    }
+                )
+
+                // The library's main UI View (the floating dialog)
+                AiTutorView(
+                    show = showAiTutor,
+                    onDismissRequest = { showAiTutor = false },
+                    codeContext = codeContextForTutor,
+                    errorContext = "", // not needed
+                    outputContext = ""
+                )
+            }
+//            }
+        }
+
         binding.symbolInput.bindEditor(binding.editor)
         setCurrentFile()
         dataStore = SettingsDataStore(applicationContext)
-        binding.materialToolbar.setTitleTextAppearance(this,R.style.RobotoBoldTextAppearance)
-        binding.aiAssist.setImageIcon(Icon.createWithResource(this,R.drawable.ai_assist_icon))
-        binding.runCode.setImageIcon(Icon.createWithResource(this,R.drawable.code_run_icon))
+        binding.materialToolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance)
+        binding.runCode.setImageIcon(Icon.createWithResource(this, R.drawable.code_run_icon))
         setSupportActionBar(binding.materialToolbar)
         binding.symbolInput.addSymbols(
             arrayOf(
@@ -160,10 +202,6 @@ class EditorActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Default).launch {
             setTheme(dataStore.mThemeString.first() ?: EditorTheme.QuietLight)
         }
-        binding.aiAssist.setOnClickListener {
-            val greeting = Greeting().greet()
-            Toast.makeText(this, greeting, Toast.LENGTH_SHORT).show()
-        }
         binding.runCode.setOnClickListener {
             saveFile()
             val mIntent = intent
@@ -181,10 +219,9 @@ class EditorActivity : AppCompatActivity() {
                 if (!currentFiles.contains(currentFile)) {
                     currentFiles = currentFiles.plus(currentFile)
                 }
-            }
-            catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(this,"File not found",Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show()
                 finish()
             }
         } else {
@@ -205,12 +242,12 @@ class EditorActivity : AppCompatActivity() {
                     } else {
                         try {
                             val filePath: String = UriUtils.uri2File(uri).absolutePath
-                            Toast.makeText(this,"This file is read only", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "This file is read only", Toast.LENGTH_LONG).show()
                             currentFile = File(filePath)
                             binding.editor.setText(currentFile.readText())
                             currentFiles = currentFiles.plus(currentFile)
 
-                        } catch (e2 : Exception) {
+                        } catch (e2: Exception) {
                             e2.printStackTrace()
                             finish()
                         }
@@ -337,7 +374,10 @@ class EditorActivity : AppCompatActivity() {
             Toast.makeText(this, "No files found", Toast.LENGTH_SHORT).show()
             return
         }
-        builder.setSingleChoiceItems(currentFiles.map { it.name }.toTypedArray(),currentFiles.indexOf(currentFile)){ dialog: DialogInterface?, which: Int ->
+        builder.setSingleChoiceItems(
+            currentFiles.map { it.name }.toTypedArray(),
+            currentFiles.indexOf(currentFile)
+        ) { dialog: DialogInterface?, which: Int ->
             currentFile = currentFiles[which]
             binding.editor.setText(currentFile.readText())
             if (!currentFiles.contains(currentFile)) {
@@ -348,6 +388,7 @@ class EditorActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.show()
     }
+
     private fun showFileListDialog(files: List<File> = PythonFileManager.pythonFiles.value) {
         val builder = MaterialAlertDialogBuilder(this)
         builder.setTitle("Choose File")
@@ -366,6 +407,7 @@ class EditorActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.show()
     }
+
     private fun showThemeDialog(themes: Array<String>) {
         val builder = MaterialAlertDialogBuilder(this)
         builder.setTitle("Choose Theme")

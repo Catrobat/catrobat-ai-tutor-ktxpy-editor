@@ -1,7 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'com.google.devtools.ksp' version '2.1.21-2.0.1'
 }
 
 android {
@@ -19,69 +20,66 @@ android {
             cmake {
                 arguments "-DAPPLICATION_ID:STRING=${applicationId}"
             }
-            }
-            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-            vectorDrawables {
-                useSupportLibrary true
-            }
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
     flavorDimensions += "cpuArch"
     productFlavors {
         arch_arm32 {
             dimension 'cpuArch'
-            versionCode 4*1000+1
+            versionCode 4 * 1000 + 1
             versionNameSuffix "-arm32"
         }
         arch_arm64 {
             dimension 'cpuArch'
-            versionCode 3*1000+1
+            versionCode 3 * 1000 + 1
             versionNameSuffix "-arm64"
         }
         arch_x86 {
             dimension 'cpuArch'
-            versionCode 2*1000+1
+            versionCode 2 * 1000 + 1
             versionNameSuffix "-x86"
         }
         arch_x86_64 {
             dimension 'cpuArch'
-            versionCode 1*1000+1
+            versionCode 1 * 1000 + 1
             versionNameSuffix "-x86_64"
         }
     }
-        buildFeatures.viewBinding = true
-        buildTypes {
-            release {
-                minifyEnabled false
-                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-                signingConfig signingConfigs.debug
-            }
+    buildFeatures.viewBinding = true
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_17
-            targetCompatibility JavaVersion.VERSION_17
-        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
     kotlin {
         sourceSets {
-            debug{
+            debug {
                 kotlin.srcDir("build/generated/ksp/debug/kotlin")
             }
-            release{
+            release {
                 kotlin.srcDir("build/generated/ksp/release/kotlin")
             }
         }
     }
-        kotlinOptions {
-            freeCompilerArgs += [
-                    "-Xjvm-default=all"
-            ]
-        }
-        composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
-        }
-        buildFeatures {
-            compose true
-        }
-    splits{
+    kotlinOptions {
+        freeCompilerArgs += [
+                "-Xjvm-default=all"
+        ]
+    }
+    buildFeatures {
+        compose true
+    }
+    splits {
         abi {
             enable true
             reset()
@@ -91,7 +89,7 @@ android {
     }
     sourceSets {
 
-        arch_arm64{
+        arch_arm64 {
             sourceSets {
                 assets.srcDirs = ["arch_arm64-v8a/assets"]
             }
@@ -135,7 +133,7 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation ('androidx.constraintlayout:constraintlayout:2.1.4')
+    implementation('androidx.constraintlayout:constraintlayout:2.1.4')
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
