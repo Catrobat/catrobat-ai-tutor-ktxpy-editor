@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace 'github.psicodes.ktxpy'
-    compileSdk 34
+    compileSdk 35
     ndkVersion '25.1.8937393'
     defaultConfig {
         applicationId "github.psicodes.ktxpy"
         minSdk 26
-        targetSdk 34
+        targetSdk 35
         versionName "1.1.0"
         versionCode 1
         android.packagingOptions.jniLibs.useLegacyPackaging true
@@ -141,8 +141,8 @@ dependencies {
     implementation("com.blankj:utilcodex:1.31.1")
 
     // lib terminal-view and terminal-editor by Termux
-    implementation("com.github.termux.termux-app:terminal-view:v0.118.0")
-    implementation("com.github.termux.termux-app:terminal-emulator:v0.118.0")
+    implementation("com.github.termux.termux-app:terminal-view:v0.118.3")
+    implementation("com.github.termux.termux-app:terminal-emulator:v0.118.3")
 
     // lib : p7zip by Hzy3774
     implementation project(':libp7zip')
