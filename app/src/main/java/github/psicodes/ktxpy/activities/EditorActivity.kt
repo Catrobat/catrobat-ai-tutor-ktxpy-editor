@@ -106,7 +106,6 @@ class EditorActivity : AppCompatActivity() {
                     show = showAiTutor,
                     onDismissRequest = { showAiTutor = false },
                     codeContext = codeContextForTutor,
-                    errorContext = "", // not needed
                     outputContext = ""
                 )
             }
