@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PoC AI Tutor (Ktxpy)</string>
+    <string name="app_name">AI Tutor (Python)</string>
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
     <string name="theme_select">Select Theme</string>
