@@ -19,5 +19,3 @@ This PoC uses a Python code editor (forked from [ktxpy](https://github.com/PsiCo
 ## License
 
 This project is released under the same license as the upstream project [ktxpy](https://github.com/PsiCodes/ktxpy). See the [LICENSE](LICENSE) file for details.
-
----
