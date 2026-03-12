@@ -76,6 +76,16 @@ class EditorActivity : AppCompatActivity() {
 
     private var showAiTutor by mutableStateOf(false)
     private var codeContextForTutor by mutableStateOf("")
+    private var lastOutputContext by mutableStateOf("")
+
+    private val termActivityLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val transcript = result.data?.getStringExtra("TERMINAL_OUTPUT") ?: ""
+            lastOutputContext = transcript
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +116,7 @@ class EditorActivity : AppCompatActivity() {
                     show = showAiTutor,
                     onDismissRequest = { showAiTutor = false },
                     codeContext = codeContextForTutor,
-                    outputContext = ""
+                    outputContext = lastOutputContext
                 )
             }
 //            }
@@ -206,7 +216,7 @@ class EditorActivity : AppCompatActivity() {
             val mIntent = intent
             mIntent.setClass(this, TermActivity::class.java)
             mIntent.putExtra(Keys.KEY_FILE_PATH, currentFile.absolutePath)
-            startActivity(mIntent)
+            termActivityLauncher.launch(mIntent)
         }
     }
 

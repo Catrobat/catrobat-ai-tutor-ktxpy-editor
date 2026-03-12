@@ -41,9 +41,22 @@ class TermActivity : ComponentActivity(),TerminalViewClient {
             }
         }
         onBackPressedDispatcher.addCallback(this,true) {
-            mTermView.mTermSession.finishIfRunning()
-            finish()
+            if (::mTermView.isInitialized) {
+                mTermView.mTermSession?.finishIfRunning()
+            }
+            finishWithResult()
         }
+    }
+
+    fun finishWithResult() {
+        if (::mTermView.isInitialized) {
+            val transcript = mTermView.mEmulator?.screen?.transcriptText?.trim() ?: ""
+            val outputIntent = android.content.Intent().apply {
+                putExtra("TERMINAL_OUTPUT", transcript)
+            }
+            setResult(RESULT_OK, outputIntent)
+        }
+        finish()
     }
 
     @Composable
@@ -175,10 +188,10 @@ class TermActivity : ComponentActivity(),TerminalViewClient {
 
     override fun onKeyUp(keyCode: Int, e: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mTermView.mTermSession.isRunning) {
-                mTermView.mTermSession.finishIfRunning()
-                finish()
+            if (::mTermView.isInitialized && mTermView.mTermSession?.isRunning == true) {
+                mTermView.mTermSession?.finishIfRunning()
             }
+            finishWithResult()
             return true
         }
         return false
@@ -224,12 +237,14 @@ class TermActivity : ComponentActivity(),TerminalViewClient {
             override fun onTitleChanged(updatedSession: TerminalSession) {  }
 
             override fun onSessionFinished(finishedSession: TerminalSession) {
-                runOnUiThread{
-                    weakActivityReference.get()?.mTermView?.let {
-                        KeyboardUtils.hideSoftInput(it)
-                        it.mTermSession?.finishIfRunning()
+                runOnUiThread {
+                    weakActivityReference.get()?.let { activity ->
+                        if (activity::mTermView.isInitialized) {
+                            KeyboardUtils.hideSoftInput(activity.mTermView)
+                            activity.mTermView.mTermSession?.finishIfRunning()
+                        }
+                        activity.finishWithResult()
                     }
-                    finish()
                 }
             }
 
